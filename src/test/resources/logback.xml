@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder 
+			by default -->
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="org.springframework" level="ERROR" />
+	<logger name="com.perahealth.trend.*" level="DEBUG" />
+
+	<!-- please shut up, activemq broker. We know you're trying to shut down too often. -->
+	<logger name="org.apache.activemq" level="OFF" />
+	<logger name="org.springframework.jms" level="OFF" />
+	
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>  
