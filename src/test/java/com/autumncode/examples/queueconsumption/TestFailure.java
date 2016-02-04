@@ -1,5 +1,7 @@
 package com.autumncode.examples.queueconsumption;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
@@ -11,32 +13,28 @@ import org.testng.annotations.Test;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 
 import static org.testng.Assert.assertEquals;
 
 @ContextConfiguration(locations = {"classpath:spring-test-config.xml"})
-public class TestWriteToQueue extends AbstractTestNGSpringContextTests {
+public class TestFailure extends AbstractTestNGSpringContextTests {
+    @Qualifier("jmsTemplateFailing")
     @Autowired
-    @Qualifier("jmsTemplateExchange")
     JmsTemplate jmsTemplate;
-
     @Autowired
-    ExchangeListener listener;
+    FailingQueueListener listener;
+
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Test
-    public void testExchange() {
-        jmsTemplate.send(session -> {
-            TextMessage message = session.createTextMessage();
-            message.setText("this is a test");
-            return message;
-        });
+    public void testFailure() {
+        jmsTemplate.send(session -> session.createTextMessage("this is a test"));
+        log.info("Sending message");
         try {
-            Thread.sleep(10);
+            Thread.sleep(100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        assertEquals(listener.messages.size(), 1);
-        assertEquals(listener.messages.get(0), "this is a test");
+        assertEquals(listener.getLastMessage(), "this is a test");
     }
 }
