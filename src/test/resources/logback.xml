@@ -13,7 +13,7 @@
 	<logger name="com.autumncode.*" level="DEBUG" />
 
 	<!-- please shut up, activemq broker. We know you're trying to shut down too often. -->
-	<logger name="org.apache.activemq" level="DEBUG" />
+	<logger name="org.apache.activemq" level="OFF" />
 	<logger name="org.springframework.jms" level="DEBUG" />
 	
 	<root level="DEBUG">

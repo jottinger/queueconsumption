@@ -1,3 +1,4 @@
+<!--suppress XmlUnusedNamespaceDeclaration -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:beans="http://www.springframework.org/schema/beans"
@@ -60,6 +61,16 @@
         <beans:property name="defaultDestination" ref="failingQueue"/>
     </beans:bean>
 
+    <!--Simple Exchange Queue -->
+    <beans:bean id="transitionQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <beans:constructor-arg value="queue.transition" />
+    </beans:bean>
+
+    <beans:bean id="jmsTemplateTransition" class="org.springframework.jms.core.JmsTemplate">
+        <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory"/>
+        <beans:property name="defaultDestination" ref="transitionQueue"/>
+    </beans:bean>
+
     <!-- Exchange Message Receiver Definition -->
     <beans:bean id="exchangeMessageReceiver" class="com.autumncode.examples.queueconsumption.ExchangeListener">
     </beans:bean>
@@ -78,5 +89,15 @@
         <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory" />
         <beans:property name="destinationName" value="queue.failing" />
         <beans:property name="messageListener" ref="failingMessageReceiver" />
+    </beans:bean>
+
+    <!-- Transition Message Receiver Definition -->
+    <beans:bean id="transitionMessageReceiver" class="com.autumncode.examples.queueconsumption.TransitionQueueListener">
+    </beans:bean>
+
+    <beans:bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory" />
+        <beans:property name="destinationName" value="queue.transition" />
+        <beans:property name="messageListener" ref="transitionMessageReceiver" />
     </beans:bean>
 </beans>
