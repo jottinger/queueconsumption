@@ -15,7 +15,7 @@ import javax.jms.Session;
 public class TransitionQueueListener implements SessionAwareMessageListener {
     Logger log = LoggerFactory.getLogger(this.getClass());
     int state = 0;
-    @Qualifier("jmsTemplateTransition")
+    @Qualifier("transitionJMSTemplate")
     @Autowired
     JmsTemplate jmsTemplate;
 

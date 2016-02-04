@@ -27,7 +27,7 @@ public class FailingQueueListener implements SessionAwareMessageListener {
         this.lastMessage = lastMessage;
     }
 
-    @Qualifier("jmsTemplateFailing")
+    @Qualifier("failingJMSTemplate")
     @Autowired
     JmsTemplate jmsTemplate;
 
