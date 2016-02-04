@@ -9,8 +9,8 @@
 		</encoder>
 	</appender>
 	
-	<logger name="org.springframework" level="ERROR" />
-	<logger name="com.perahealth.trend.*" level="DEBUG" />
+	<logger name="org.springframework" level="DEBUG" />
+	<logger name="com.autumncode.*" level="DEBUG" />
 
 	<!-- please shut up, activemq broker. We know you're trying to shut down too often. -->
 	<logger name="org.apache.activemq" level="DEBUG" />

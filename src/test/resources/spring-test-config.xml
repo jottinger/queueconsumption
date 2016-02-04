@@ -40,8 +40,23 @@
         <beans:property name="connectionFactory" ref="jmsConnectionFactory" />
     </beans:bean>
 
-    <!--Queues -->
-    <beans:bean id="activeMQQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <beans:constructor-arg value="queue.test" />
+    <!--Simple Exchange Queue -->
+    <beans:bean id="exchangeQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <beans:constructor-arg value="queue.exchange" />
+    </beans:bean>
+
+    <beans:bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory"/>
+        <beans:property name="defaultDestination" ref="exchangeQueue"/>
+    </beans:bean>
+
+    <!-- Message Receiver Definition -->
+    <beans:bean id="messageReceiver" class="com.autumncode.examples.queueconsumption.ExchangeListener">
+    </beans:bean>
+
+    <beans:bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory" />
+        <beans:property name="destinationName" value="queue.exchange" />
+        <beans:property name="messageListener" ref="messageReceiver" />
     </beans:bean>
 </beans>
