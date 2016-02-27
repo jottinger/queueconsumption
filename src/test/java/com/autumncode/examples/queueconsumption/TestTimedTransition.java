@@ -11,23 +11,23 @@ import javax.jms.Message;
 
 import static org.testng.Assert.assertEquals;
 
-@ContextConfiguration(locations = {"classpath:spring-test-config.xml"})
-public class TestTransition extends AbstractTestNGSpringContextTests {
+@ContextConfiguration(locations = {"classpath:spring-timed-transition.xml"})
+public class TestTimedTransition extends AbstractTestNGSpringContextTests {
     @Autowired
     @Qualifier("transitionJMSTemplate")
     JmsTemplate jmsTemplate;
 
     @Autowired
-    TransitionQueueListener listener;
+    TimedTransitionQueueListener listener;
 
     @Test
     public void testOrderedTransitions() {
         listener.reset();
-        for(int i=0;i<10;i++) {
+        for (int i = 0; i < 10; i++) {
             sendMessage(i);
         }
         try {
-            Thread.sleep(200);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -47,11 +47,11 @@ public class TestTransition extends AbstractTestNGSpringContextTests {
     @Test
     public void testOutOfOrderTransitions() {
         listener.reset();
-        for(int i=9;i>=0;i--) {
+        for (int i = 9; i >= 0; i--) {
             sendMessage(i);
         }
         try {
-            Thread.sleep(200);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

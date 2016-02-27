@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:beans="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.9.0.xsd">
+
+    <context:component-scan base-package="com.autumncode.examples.queueconsumption"/>
+
+    <aop:aspectj-autoproxy/>
+
+    <amq:broker useJmx="true" persistent="false" useShutdownHook="false" useLoggingForShutdownErrors="false"
+                schedulerSupport="true">
+        <amq:transportConnectors>
+            <amq:transportConnector uri="tcp://localhost:0"/>
+        </amq:transportConnectors>
+    </amq:broker>
+
+    <beans:bean id="jmsConnectionFactory"
+                class="org.apache.activemq.ActiveMQConnectionFactory">
+        <beans:property name="brokerURL" value="vm://localhost?broker.persistent=false"/>
+    </beans:bean>
+
+    <beans:bean id="pooledJmsConnectionFactory"
+                class="org.apache.activemq.pool.PooledConnectionFactory"
+                destroy-method="stop">
+        <beans:property name="connectionFactory" ref="jmsConnectionFactory"/>
+    </beans:bean>
+
+    <!--Simple Exchange Queue -->
+    <beans:bean id="transitionQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <beans:constructor-arg value="queue.transition"/>
+    </beans:bean>
+
+    <beans:bean id="transitionJMSTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory"/>
+        <beans:property name="defaultDestination" ref="transitionQueue"/>
+    </beans:bean>
+
+    <!-- Transition Message Receiver Definition -->
+    <beans:bean id="transitionMessageReceiver"
+                class="com.autumncode.examples.queueconsumption.TimedTransitionQueueListener">
+        <property name="expireTime" value="1000"/>
+    </beans:bean>
+
+    <beans:bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <beans:property name="connectionFactory" ref="pooledJmsConnectionFactory"/>
+        <beans:property name="destinationName" value="queue.transition"/>
+        <beans:property name="messageListener" ref="transitionMessageReceiver"/>
+    </beans:bean>
+</beans>

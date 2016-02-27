@@ -12,7 +12,7 @@ import javax.jms.Message;
 import static org.testng.Assert.assertEquals;
 
 @ContextConfiguration(locations = {"classpath:spring-test-config.xml"})
-public class TestTransition extends AbstractTestNGSpringContextTests {
+public class TestDelayedTransition extends AbstractTestNGSpringContextTests {
     @Autowired
     @Qualifier("transitionJMSTemplate")
     JmsTemplate jmsTemplate;
@@ -23,7 +23,7 @@ public class TestTransition extends AbstractTestNGSpringContextTests {
     @Test
     public void testOrderedTransitions() {
         listener.reset();
-        for(int i=0;i<10;i++) {
+        for (int i = 0; i < 10; i++) {
             sendMessage(i);
         }
         try {
@@ -47,7 +47,7 @@ public class TestTransition extends AbstractTestNGSpringContextTests {
     @Test
     public void testOutOfOrderTransitions() {
         listener.reset();
-        for(int i=9;i>=0;i--) {
+        for (int i = 9; i >= 0; i--) {
             sendMessage(i);
         }
         try {
